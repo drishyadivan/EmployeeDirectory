@@ -58,14 +58,6 @@ class EmployeeAdapter(private val context: Context) :
     override fun getItemCount(): Int {
         return employeeList.size
     }
-
-    fun filterList(names: ArrayList<String>) {
-        this.nameList = names
-        for (n in names) {
-            employeeList.filter { it.equals(names) }
-        }
-        notifyDataSetChanged()
-    }
 }
 
 class EmployeeViewHolder(val binding: AdapterEmployeeBinding) :

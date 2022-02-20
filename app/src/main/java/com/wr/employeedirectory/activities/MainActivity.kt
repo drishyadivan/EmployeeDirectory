@@ -14,15 +14,18 @@ import com.wr.employeedirectory.EmployeeApplication
 import com.wr.employeedirectory.R
 import com.wr.employeedirectory.adapter.EmployeeAdapter
 import com.wr.employeedirectory.databinding.ActivityMainBinding
+import com.wr.employeedirectory.models.EmployeeItem
 import com.wr.employeedirectory.viewmodel.EmployeeViewModel
 import com.wr.employeedirectory.viewmodel.EmployeeViewModelFactory
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var employeeViewModel: EmployeeViewModel
     private lateinit var adapter: EmployeeAdapter
     private lateinit var binding: ActivityMainBinding
-
+    private var employeeList = mutableListOf<EmployeeItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         adapter = EmployeeAdapter(this)
         val repository = (application as EmployeeApplication).employeeRepository
 
@@ -42,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         employeeViewModel.employees.observe(this, Observer {
             Log.e("EMPLOYEE", it.toString())
+            employeeList = it as MutableList<EmployeeItem>
             adapter.setEmployee(it)
         })
 
@@ -65,7 +70,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(query: String?): Boolean {
-                filter(query.toString());
+                //    filter(query.toString());
+                filterWithQuery(query.toString())
                 return false
             }
         })
@@ -81,15 +87,26 @@ class MainActivity : AppCompatActivity() {
         } else super.onOptionsItemSelected(item)
     }
 
-    private fun filter(text: String) {
-
-        val filterdNames: ArrayList<String> = ArrayList()
-        for (e in employeeViewModel.employees.value!!) {
-            if (e.name.lowercase().contains(text.lowercase())) {
-                filterdNames.add(e.name.lowercase())
+    private fun onQueryChanged(filterQuery: String): List<EmployeeItem> {
+        val filteredList = ArrayList<EmployeeItem>()
+        for (emp in employeeList) {
+            if (emp.name.toLowerCase(Locale.getDefault()).contains(filterQuery)) {
+                filteredList.add(emp)
+            }
+            if (emp.email.toLowerCase(Locale.getDefault()).contains(filterQuery)) {
+                filteredList.add(emp)
             }
         }
-
-        adapter.filterList(filterdNames)
+        return filteredList
     }
+
+    private fun filterWithQuery(query: String) {
+        if (query.isNotEmpty()) {
+            val filteredList: List<EmployeeItem> = onQueryChanged(query)
+            adapter.setEmployee(filteredList)
+        } else if (query.isEmpty()) {
+            adapter.setEmployee(employeeList)
+        }
+    }
+
 }
