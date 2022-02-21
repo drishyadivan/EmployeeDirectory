@@ -36,21 +36,9 @@ class EmployeeAdapter(private val context: Context) :
         Glide.with(holder.itemView.context).load(employee.profile_image).into(holder.binding.ivPic)
 
         holder.binding.profile.setOnClickListener {
-            val address =
-                employee.address.street + comma + employee.address.suite + comma + employee.address.city + comma + employee.address.zipcode
-            val company =
-                (employee.company?.name) + comma + (employee.company?.catchPhrase) + comma + (employee.company?.bs
-                        )
-            val i = Intent(context, DetailsActivity::class.java)
-            i.putExtra("Name", employee.name)
-            i.putExtra("ImageUrl", employee.profile_image)
-            i.putExtra("Username", employee.username)
-            i.putExtra("Email", employee.email)
-            i.putExtra("Phone", employee.phone)
-            i.putExtra("Website", employee.website)
-            i.putExtra("Address", address)
-            i.putExtra("Company", company)
-            context.startActivity(i)
+            val intent = Intent(context, DetailsActivity::class.java)
+            intent.putExtra("details", employee)
+            context.startActivity(intent)
         }
 
     }
